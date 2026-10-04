@@ -316,6 +316,25 @@ with these operations:
 - ``subtract(key, value)``: subtract ``value`` from the value of a key
 - ``set(key, value)``: set ``key`` to ``value``
 
+All operations resolve their first argument as a *path* into nested
+documents, split on ``.`` by default:
+
+>>> db.update(set('profile.name', 'John'), User.id == 1)
+>>> db.update(increment('stats.count'), User.id == 1)
+
+Missing intermediate dictionaries are created automatically. Numeric
+segments index into lists and ``-`` appends a new element:
+
+>>> db.update(set('tags.0', 'new'), User.id == 1)
+>>> db.update(set('tags.-', 'appended'), User.id == 1)
+
+The separator can be changed with the ``separator`` keyword argument
+(``separator=None`` disables path parsing entirely). Keys that literally
+contain the separator can be addressed by escaping it with a backslash
+(``r'a\.b'``) or by passing the path as a tuple of literal segments
+(``('a.b',)``). Out-of-range list indices raise ``IndexError`` and
+descending into a non-container value raises ``TypeError``.
+
 Of course you also can write your own operations:
 
 >>> def your_operation(your_arguments):
