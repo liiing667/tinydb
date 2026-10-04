@@ -19,6 +19,23 @@ see `semver.org <http://semver.org/>`_
           syntax (``Query()['some']['nested']['field']``) that will
           not break even when new methods are added to the ``Query`` API.
 
+v4.10.0 (unreleased)
+^^^^^^^^^^^^^^^^^^^^
+
+- Feature: The update operations in ``tinydb.operations`` (``set``,
+  ``add``, ``subtract``, ``delete``, ``increment`` and ``decrement``) now
+  interpret their field argument as a path into nested documents. Segments
+  are split on a configurable separator (``.`` by default), missing
+  intermediate dictionaries are created on the fly, lists are addressed
+  with numeric indices and ``-`` as the final segment appends to a list.
+  Keys that literally contain the separator can be addressed by escaping
+  it with a backslash (e.g. ``'profile\\.name'``) or by passing the path
+  as a tuple of literal segments (e.g. ``('profile.name',)``).
+- Change: ``add``, ``subtract``, ``increment`` and ``decrement`` now raise
+  ``TypeError`` instead of silently concatenating strings; path traversal
+  into a non-container raises ``TypeError`` and invalid/out-of-range list
+  indices raise ``ValueError``/``IndexError`` with clear messages.
+
 v4.9.0 (2026-08-06)
 ^^^^^^^^^^^^^^^^^^^
 

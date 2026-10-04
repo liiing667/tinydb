@@ -312,9 +312,23 @@ with these operations:
 - ``delete(key)``: delete a key from the document
 - ``increment(key)``: increment the value of a key
 - ``decrement(key)``: decrement the value of a key
-- ``add(key, value)``: add ``value`` to the value of a key (also works for strings)
+- ``add(key, value)``: add ``value`` to the value of a numeric key
 - ``subtract(key, value)``: subtract ``value`` from the value of a key
 - ``set(key, value)``: set ``key`` to ``value``
+
+The ``key`` of these operations is interpreted as a path into nested
+documents: segments are split on ``.``, missing intermediate dictionaries
+are created on the fly, lists are addressed with numeric indices and ``-``
+as the final segment appends to a list:
+
+>>> db.update(set('profile.name', 'x'), where('id') == 1)
+>>> db.update(add('stats.count', 1), where('id') == 1)
+>>> db.update(set('tags.-', 'new-tag'), where('id') == 1)
+
+To use a different separator, pass e.g. ``separator='/'`` to the
+operation. To address a key that literally contains the separator, escape
+it with a backslash (``'profile\\.name'``) or pass the path as a tuple of
+segments (``('profile.name',)``).
 
 Of course you also can write your own operations:
 
